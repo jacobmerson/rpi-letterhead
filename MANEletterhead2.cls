@@ -26,8 +26,8 @@
 % Savebox for measuring sidebar content height
 \newsavebox{\LH@sidebarbox}
 
-\newcommand{\LH@logoFile}{RPI_Lockup_MechanicalAerospaceandNuclearEngineering_Lg.pdf}
-\newcommand{\LH@smallLogoFile}{RPI_Logo.pdf}
+\newcommand{\LH@logoFile}{logos/RPI_Lockup_MechanicalAerospaceandNuclearEngineering_Lg.pdf}
+\newcommand{\LH@smallLogoFile}{logos/RPI_Logo.pdf}
 
 %\newcommand{\LH@schoolName}{SCHOOL OR PORTFOLIO\\NAME GOES HERE}
 \newcommand{\LH@date}{\LH@today}
