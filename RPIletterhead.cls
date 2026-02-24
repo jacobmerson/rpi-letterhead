@@ -5,8 +5,11 @@
 % Department option processing
 % --------------------------------------------------------------------------
 \def\LH@dept{none}
-\DeclareOption{department=MANE}{\def\LH@dept{MANE}}
-\DeclareOption{department=FOCI}{\def\LH@dept{FOCI}}
+\newcommand{\LH@declaredepartmentoption}[1]{%
+  \DeclareOption{department=#1}{\def\LH@dept{#1}}%
+}
+\LH@declaredepartmentoption{MANE}
+\LH@declaredepartmentoption{FOCI}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \ProcessOptions\relax
 
@@ -298,22 +301,39 @@
 % --------------------------------------------------------------------------
 % Department presets
 % --------------------------------------------------------------------------
+\newcommand{\LH@setpresetfields}[4]{%
+  \renewcommand{\LH@logoFile}{#1}%
+  \renewcommand{\LH@departmentText}{#2}%
+  \renewcommand{\LH@contactText}{#3}%
+  \renewcommand{\LH@footerCenter}{#4}%
+}
+
 \newcommand{\LH@preset@MANE}{%
-  \renewcommand{\LH@logoFile}{logos/RPI_Lockup_MechanicalAerospaceandNuclearEngineering_Lg.pdf}%
-  \renewcommand{\LH@departmentText}{Department of \mbox{Mechanical},\\Aerospace, and Nuclear\\Engineering}%
-  \renewcommand{\LH@contactText}{mane@rpi.edu\\P +1 518 276 6000}%
-  \renewcommand{\LH@footerCenter}{2049 JONSSON ENGINEERING CENTER, 110 EIGHTH ST, TROY, NY 12180-3590}%
+  \LH@setpresetfields
+    {logos/RPI_Lockup_MechanicalAerospaceandNuclearEngineering_Lg.pdf}
+    {Department of \mbox{Mechanical},\\Aerospace, and Nuclear\\Engineering}
+    {mane@rpi.edu\\P +1 518 276 6000}
+    {2049 JONSSON ENGINEERING CENTER, 110 EIGHTH ST, TROY, NY 12180-3590}%
 }
 
 \newcommand{\LH@preset@FOCI}{%
-  \renewcommand{\LH@logoFile}{logos/RPI_Lockup_FOCI_Md.png}%
-  \renewcommand{\LH@departmentText}{Future of Computing\\Institute}%
-  \renewcommand{\LH@contactText}{foci@rpi.edu\\P +1 518 276 6000}%
-  \renewcommand{\LH@footerCenter}{110 8TH ST TROY NY 12180}%
+  \LH@setpresetfields
+    {logos/RPI_Lockup_FOCI_Md.png}
+    {Future of Computing\\Institute}
+    {foci@rpi.edu\\P +1 518 276 6000}
+    {110 8TH ST TROY NY 12180}%
 }
 
-% Apply the selected department preset
-\ifdefstring{\LH@dept}{MANE}{\LH@preset@MANE}{}
-\ifdefstring{\LH@dept}{FOCI}{\LH@preset@FOCI}{}
+% Apply the selected department preset (if one was selected and exists).
+\newcommand{\LH@applyselectedpreset}{%
+  \ifdefstring{\LH@dept}{none}{}{%
+    \@ifundefined{LH@preset@\LH@dept}{%
+      \ClassWarningNoLine{RPIletterhead}{No preset defined for department '\LH@dept'. Using generic defaults}%
+    }{%
+      \csname LH@preset@\LH@dept\endcsname
+    }%
+  }%
+}
+\LH@applyselectedpreset
 
 \endinput
