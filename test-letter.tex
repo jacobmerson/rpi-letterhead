@@ -1,0 +1,33 @@
+\documentclass{MANEletterhead2}
+
+\letterdate{06.30.2025}
+
+\department{Department of \mbox{Mechanical}, {Aerospace}, and {Nuclear} {Engineering}}
+\contactinfo{jmerson@rpi.edu\\P +1 518 276 XXXX}
+
+\recipient{Name Surname\\100 Street Avenue\\New York, NY 10001}
+
+\footerpageonecenter{2049 Jonsson Engineering Center}
+\footercontinuationcenter{JEC 4000, 110 8TH ST TROY NY 12180}
+\footercontinuationright{RPI.EDU}
+\usepackage{lipsum}
+
+\begin{document}
+\begin{letterbody}
+
+\letteropening{Dear Name,}
+
+This is an example body paragraph. The key point is that the body text is constrained to
+the right-side column, while the first-page left sidebar is placed with fixed coordinates.
+This avoids the instability of \verb|\marginpar| and more faithfully reproduces the Word template.
+
+Additional paragraphs will flow naturally, and continuation pages will use the continuation footer.
+
+\lipsum[1-10]
+
+\letterclosing{Sincerely,}
+
+Jacob Merson
+
+\end{letterbody}
+\end{document}
