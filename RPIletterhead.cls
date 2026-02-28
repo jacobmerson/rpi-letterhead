@@ -38,15 +38,21 @@
   \setmainfont{Latin Modern Roman}%
 }
 
-% this is using 1.2*fontsize as baseline skip
+% Normal body text: 9.6pt with 1.2× leading (11.52pt baseline skip)
 \renewcommand{\normalsize}{\fontsize{9.6}{11.52}\selectfont}
 \normalsize
 
-% Bold label size (9.12pt) used for headings like DEPARTMENT, CONTACT, TO, date, footers
+% Label size: 0.95 × 9.6pt = 9.12pt, used for headings (DEPARTMENT, CONTACT, TO, date, footers)
+% Baseline skip: 1.2 × 9.12pt ≈ 10.94pt
 \newcommand{\LH@labelsize}{\fontsize{9.12}{10.94}\selectfont}
 
 % Savebox for measuring sidebar content height
 \newsavebox{\LH@sidebarbox}
+\newsavebox{\LH@deptbox}
+\newsavebox{\LH@contactbox}
+% Savebox for measuring TO and SUBJECT blocks in the right column
+\newsavebox{\LH@tobox}
+\newsavebox{\LH@subjectbox}
 
 % --------------------------------------------------------------------------
 % Generic defaults
@@ -55,6 +61,7 @@
 \newcommand{\LH@smallLogoFile}{logos/RPI_Logo.pdf}
 
 \newcommand{\LH@date}{\LH@today}
+\newcommand{\LH@signature}{}
 
 \newcommand{\LH@departmentTitle}{DEPARTMENT}
 \newcommand{\LH@departmentText}{Insert department or\\office name here}
@@ -64,6 +71,8 @@
 
 \newcommand{\LH@toTitle}{TO}
 \newcommand{\LH@toText}{Name Surname\\100 Street Avenue\\New York, NY 10001}
+\newcommand{\LH@subjectTitle}{SUBJECT}
+\newcommand{\LH@subjectText}{}
 
 \newcommand{\LH@footerPageOneLeft}{RPI.EDU}
 \newcommand{\LH@footerCenter}{BUILDING, 110 EIGHTH ST TROY NY 12180}
@@ -84,6 +93,8 @@
 \NewDocumentCommand{\letterheadlogo}{m}{\renewcommand{\LH@logoFile}{#1}}
 \NewDocumentCommand{\letterheadsmalllogo}{m}{\renewcommand{\LH@smallLogoFile}{#1}}
 \NewDocumentCommand{\letterdate}{m}{\renewcommand{\LH@date}{#1}}
+\renewcommand{\date}[1]{\renewcommand{\LH@date}{#1}}
+\NewDocumentCommand{\signature}{m}{\renewcommand{\LH@signature}{#1}}
 
 \NewDocumentCommand{\department}{m}{\renewcommand{\LH@departmentText}{#1}}
 \NewDocumentCommand{\contactinfo}{m}{\renewcommand{\LH@contactText}{#1}}
@@ -109,6 +120,10 @@
 \newlength{\LH@bodyX}         \setlength{\LH@bodyX}{1.87in}
 \newlength{\LH@bodyY}         % body y set based on height of the contact info
 \newlength{\LH@bodyWidth}     \setlength{\LH@bodyWidth}{5in}
+\newlength{\LH@contactY}
+\newlength{\LH@subjectY}
+\newlength{\LH@toBottomY}
+\newlength{\LH@subjectBottomY}
 
 \newlength{\LH@contBodyY}     \setlength{\LH@contBodyY}{1.87in}
 
@@ -154,6 +169,65 @@
   }%
 }
 
+% Measure first-page fixed blocks and compute first-page body start.
+% SUBJECT is aligned to CONTACT by using the same Y coordinate.
+% Body starts below whichever fixed block extends lowest.
+\newcommand{\LH@measurefirstpageblocks}{%
+  \savebox{\LH@deptbox}{%
+    \parbox[t]{\dimexpr\LH@sidebarWidth-2\LH@cellPad\relax}{%
+      \raggedright
+      {\bfseries\LH@labelsize \LH@departmentTitle}\par
+      \vspace{0.3em}
+      \LH@departmentText\par
+      \vspace{1.2em}
+    }%
+  }%
+  \savebox{\LH@contactbox}{%
+    \parbox[t]{\dimexpr\LH@sidebarWidth-2\LH@cellPad\relax}{%
+      \raggedright
+      {\bfseries\LH@labelsize \LH@contactTitle}\par
+      \vspace{0.3em}
+      \LH@contactText
+    }%
+  }%
+  \savebox{\LH@sidebarbox}{%
+    \parbox[t]{\dimexpr\LH@sidebarWidth-2\LH@cellPad\relax}{%
+      \usebox{\LH@deptbox}\usebox{\LH@contactbox}%
+    }%
+  }%
+  \savebox{\LH@tobox}{%
+    \parbox[t]{\dimexpr\LH@toWidth-2\LH@cellPad\relax}{%
+      \raggedright
+      {\bfseries\LH@labelsize \LH@toTitle}\par
+      \vspace{0.3em}
+      \LH@toText
+    }%
+  }%
+  \savebox{\LH@subjectbox}{%
+    \parbox[t]{\dimexpr\LH@toWidth-2\LH@cellPad\relax}{%
+      \raggedright
+      \ifdefempty{\LH@subjectText}{}{%
+        {\bfseries\LH@labelsize \LH@subjectTitle:}~\LH@subjectText
+      }%
+    }%
+  }%
+  \setlength{\LH@contactY}{\dimexpr \LH@sidebarY + \ht\LH@deptbox + \dp\LH@deptbox\relax}%
+  \setlength{\LH@subjectY}{\LH@contactY}%
+  \setlength{\LH@bodyY}{\dimexpr \LH@contactY + \ht\LH@contactbox + \dp\LH@contactbox\relax}%
+  \setlength{\LH@toBottomY}{\dimexpr \LH@toY + \ht\LH@tobox + \dp\LH@tobox\relax}%
+  \ifdefempty{\LH@subjectText}{%
+    \setlength{\LH@subjectBottomY}{0pt}%
+  }{%
+    \setlength{\LH@subjectBottomY}{\dimexpr \LH@subjectY + \ht\LH@subjectbox + \dp\LH@subjectbox\relax}%
+  }%
+  \ifdim\LH@toBottomY>\LH@bodyY\relax
+    \setlength{\LH@bodyY}{\LH@toBottomY}%
+  \fi
+  \ifdim\LH@subjectBottomY>\LH@bodyY\relax
+    \setlength{\LH@bodyY}{\LH@subjectBottomY}%
+  \fi
+}
+
 % --------------------------------------------------------------------------
 % Helper: draw first-page overlay (logo/date/sidebar/to block/footer)
 % --------------------------------------------------------------------------
@@ -174,16 +248,24 @@
       % --- Sidebar: Department + Contact (fixed box, page 1 only)
       \node[anchor=north west, inner sep=0pt]
         at ([xshift=\LH@sidebarX,yshift=-\LH@sidebarY]current page.north west) {%
-          \usebox{\LH@sidebarbox}%
+          \usebox{\LH@deptbox}%
+      };
+      \node[anchor=north west, inner sep=0pt]
+        at ([xshift=\LH@sidebarX,yshift=-\LH@contactY]current page.north west) {%
+          \usebox{\LH@contactbox}%
       };
 
       % --- TO block (fixed box, page 1 only)
-      \node[anchor=north west, text width=\dimexpr\LH@toWidth-2\LH@cellPad\relax, align=left, inner sep=0pt]
+      \node[anchor=north west, inner sep=0pt]
         at ([xshift=\dimexpr\LH@toX+\LH@cellPad\relax,yshift=-\LH@toY]current page.north west) {%
-          {\bfseries\LH@labelsize \LH@toTitle}\par
-          \vspace{0.3em}
-          \LH@toText
+          \usebox{\LH@tobox}%
       };
+      \ifdefempty{\LH@subjectText}{}{%
+        \node[anchor=north west, inner sep=0pt]
+          at ([xshift=\dimexpr\LH@toX+\LH@cellPad\relax,yshift=-\LH@subjectY]current page.north west) {%
+            \usebox{\LH@subjectbox}%
+        };
+      }
 
       % --- First-page footer (overlay only; page 1 fancy footer disabled below)
       \node[anchor=north west, inner sep=0pt] at ([xshift=\LH@sidebarX,yshift=\LH@footerYOffset]current page.south west) {%
@@ -231,24 +313,12 @@
 % Main text area control
 % --------------------------------------------------------------------------
 \AtBeginDocument{%
-  % IMPORTANT: make the text frame match the right-hand body column
+  % Apply body-column geometry before any page content is set,
+  % so page 1 uses the correct text frame.
   \LH@applybodygeometry
 
-  % Pre-render sidebar content into a savebox to measure its height
-  \savebox{\LH@sidebarbox}{%
-    \parbox[t]{\dimexpr\LH@sidebarWidth-2\LH@cellPad\relax}{%
-      \raggedright
-      {\bfseries\LH@labelsize \LH@departmentTitle}\par
-      \vspace{0.3em}
-      \LH@departmentText\par
-      \vspace{1.2em}
-      {\bfseries\LH@labelsize \LH@contactTitle}\par
-      \vspace{0.3em}
-      \LH@contactText
-    }%
-  }%
-  % Compute body Y = sidebar top + sidebar height (no extra gap)
-  \setlength{\LH@bodyY}{\dimexpr \LH@sidebarY + \ht\LH@sidebarbox + \dp\LH@sidebarbox\relax}%
+  % Measure fixed first-page blocks used by overlay + body start.
+  \LH@measurefirstpageblocks
 
   % Page-1 overlay artwork / fixed text blocks
   \LH@drawfirstpageoverlay
@@ -258,44 +328,54 @@
 
   % Prevent duplicated page-1 footer (overlay already draws footer on page 1)
   \thispagestyle{empty}
-
-  % Reasonable paragraph spacing for letter style
-  \setlength{\parindent}{0pt}
-  \setlength{\parskip}{0.55em}
-
-  % Push page-1 body text below sidebar bottom.
-  % Keep horizontal placement to geometry (do NOT manually set \textwidth/\oddsidemargin).
-  \vspace*{\dimexpr \LH@bodyY - 1in - \topmargin - \headheight - \headsep - \parskip - \topskip\relax}
 }
 
 % --------------------------------------------------------------------------
-% User-facing helper environment for letters
+% Letter-class-like API
 % --------------------------------------------------------------------------
-\NewDocumentEnvironment{letterbody}{}{%
-  % no-op: layout already handled globally
+\NewDocumentEnvironment{letter}{m}{%
+  \renewcommand{\LH@toText}{#1}%
+  % Recompute TO(+SUBJECT) height for this letter's recipient/subject.
+  \LH@measurefirstpageblocks
+  % Body typography
+  \setlength{\parindent}{0pt}
+  \setlength{\parskip}{0.55em}
+  % Start first-page body text below sidebar bottom.
+  % Use class coordinates directly so the shift is stable regardless of runtime page-length internals.
+  \vspace*{\dimexpr \LH@bodyY - \LH@contBodyY - \parskip - \topskip\relax}
 }{}
 
 % --------------------------------------------------------------------------
-% Optional helper macros for common letter parts
+% Letter-class-like content commands
 % --------------------------------------------------------------------------
-\NewDocumentCommand{\lettersubject}{m}{%
-  \vspace{0.4em}
-  {\bfseries #1}\par
-  \vspace{0.4em}
-}
-
-\NewDocumentCommand{\letteropening}{m}{%
+\NewDocumentCommand{\opening}{m}{%
   #1\par
 }
 
-\NewDocumentCommand{\letterclosing}{m}{%
+\NewDocumentCommand{\closing}{m}{%
   \vspace{1.2em}
   #1\par
+  \vspace{2.5em}
+  \ifdefempty{\LH@signature}{}{\LH@signature\par}
 }
 
-\NewDocumentCommand{\lettersignature}{m}{%
-  \vspace{2.5em}
-  #1\par
+\NewDocumentCommand{\cc}{m}{%
+  \vspace{1.2em}
+  \textbf{cc:}~#1\par
+}
+
+\NewDocumentCommand{\encl}{m}{%
+  \vspace{0.3em}
+  \textbf{encl:}~#1\par
+}
+
+\NewDocumentCommand{\ps}{m}{%
+  \vspace{1.2em}
+  \textbf{P.S.}~#1\par
+}
+
+\NewDocumentCommand{\subject}{m}{%
+  \renewcommand{\LH@subjectText}{#1}
 }
 
 % --------------------------------------------------------------------------
@@ -311,7 +391,7 @@
 \newcommand{\LH@preset@MANE}{%
   \LH@setpresetfields
     {logos/RPI_Lockup_MechanicalAerospaceandNuclearEngineering_Lg.pdf}
-    {Department of \mbox{Mechanical},\\Aerospace, and Nuclear\\Engineering}
+    {Department of Mechanical, Aerospace, and Nuclear Engineering}
     {mane@rpi.edu\\P +1 518 276 6000}
     {2049 JONSSON ENGINEERING CENTER, 110 EIGHTH ST, TROY, NY 12180-3590}%
 }

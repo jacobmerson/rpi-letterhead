@@ -1,28 +1,23 @@
+% department presets included for MANE and FOCI
+% additional departments can be added to the .cls file
 \documentclass[department=MANE]{RPIletterhead}
 
-\letterdate{06.30.2025}
+\date{06.30.2025}
+\signature{Name\\Assistant Professor}
 
 % MANE preset values are loaded automatically; override individual fields as needed:
-\contactinfo{mersoj2@rpi.edu\\P +1 518 276 2854}
+\contactinfo{email@rpi.edu\\P +1 518 276 XXXX}
 
-\recipient{Name Surname\\100 Street Avenue\\New York, NY 10001}
 \usepackage{lipsum}
 
 \begin{document}
-\begin{letterbody}
+\begin{letter}{Name Surname\\100 Street Avenue\\New York, NY 10001}
 
-\letteropening{Dear Name,}
-
-This is an example body paragraph. The key point is that the body text is constrained to
-the right-side column, while the first-page left sidebar is placed with fixed coordinates.
-This avoids the instability of \verb|\marginpar| and more faithfully reproduces the Word template.
-
-Additional paragraphs will flow naturally, and continuation pages will use the continuation footer.
+\opening{Dear Name,}
 
 \lipsum[1-10]
 
-\letterclosing{Sincerely,}
-\lettersignature{Jacob Merson\\Assistant Professor}
+\closing{Sincerely,}
 
-\end{letterbody}
+\end{letter}
 \end{document}
