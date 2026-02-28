@@ -3,13 +3,15 @@
 `RPIletterhead.cls` provides an RPI-branded letter format with a `letter` API similar to LaTeX's default `letter` class.
 
 ## Requirements
-1. Install RPIGeist fonts from [brand.rpi.edu](https://brand.rpi.edu/document/13).
-2. Compile with `lualatex` or `xelatex` (not `pdflatex`).
+1. Compile with `lualatex` or `xelatex` (not `pdflatex`).
+2. RPIGeist font files are bundled under `fonts/` and are used automatically.
+3. Optional: if `fonts/` is removed, install RPIGeist system-wide from [brand.rpi.edu](https://brand.rpi.edu/document/13).
 
 Example build commands:
 - `lualatex letter.tex`
 - `xelatex letter.tex`
 - `latexmk -xelatex letter.tex`
+- Overleaf: set compiler to `XeLaTeX` or `LuaLaTeX` in the "settings" pane
 
 ## Example Usage
 ```tex

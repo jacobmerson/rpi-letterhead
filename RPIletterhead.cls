@@ -31,11 +31,20 @@
   \ClassError{RPIletterhead}{This class requires XeLaTeX or LuaLaTeX (fontspec is used)}{Compile with xelatex or lualatex.}
 \fi
 
-\IfFontExistsTF{RPI Geist}{%
-  \setmainfont{RPI Geist}%
+\IfFileExists{fonts/RPIGeist-Regular.otf}{%
+  \setmainfont{RPIGeist-Regular.otf}[
+    Path=fonts/,
+    BoldFont=RPIGeist-Bold.otf,
+    ItalicFont=RPIGeist-RegularItalic.otf,
+    BoldItalicFont=RPIGeist-BoldItalic.otf
+  ]%
 }{%
-  \ClassWarningNoLine{RPIletterhead}{Font 'RPI Geist' not found. Falling back to Latin Modern Roman}%
-  \setmainfont{Latin Modern Roman}%
+  \IfFontExistsTF{RPI Geist}{%
+    \setmainfont{RPI Geist}%
+  }{%
+    \ClassWarningNoLine{RPIletterhead}{Font 'RPI Geist' not found. Falling back to Latin Modern Roman}%
+    \setmainfont{Latin Modern Roman}%
+  }%
 }
 
 % Normal body text: 9.6pt with 1.2× leading (11.52pt baseline skip)
