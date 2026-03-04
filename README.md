@@ -2,6 +2,8 @@
 
 `RPIletterhead.cls` provides an RPI-branded letter format with a `letter` API similar to LaTeX's default `letter` class.
 
+Note: AI tools (Codex) have been used in the construction of this .cls file.
+
 ## Requirements
 1. Compile with `lualatex` or `xelatex` (not `pdflatex`).
 2. RPIGeist font files are bundled under `fonts/` and are used automatically.
@@ -23,9 +25,10 @@ Example build commands:
 
 % Optional overrides for preset values:
 \contactinfo{email@rpi.edu\\P +1 518 276 XXXX}
+\recipient{Name Surname\\100 Street Avenue\\New York, NY 10001}
 
 \begin{document}
-\begin{letter}{Name Surname\\100 Street Avenue\\New York, NY 10001}
+\begin{letter}
 \opening{Dear Name,}
 Body paragraph one.
 
@@ -64,7 +67,7 @@ Department support has two parts in `RPIletterhead.cls`: option declaration and 
 ```
 
 Notes:
-- `\subject{...}` is header metadata in this template; set it before `\begin{letter}{...}` so it appears in the fixed TO/SUBJECT block.
+- `\subject{...}` is header metadata in this template; set it before `\begin{letter}` so it appears in the fixed TO/SUBJECT block.
 - The option value in `department=...` must match the suffix in `\LH@preset@...` exactly.
 - If a preset is missing for a declared department option, the class falls back to generic defaults and emits a warning.
 - Keep logo assets in `logos/` and reference them with paths relative to the `.tex` file.

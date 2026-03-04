@@ -83,7 +83,7 @@
 \newcommand{\LH@contactText}{email@rpi.edu\\P +1 518 276 6000\\F 000 000 0000}
 
 \newcommand{\LH@toTitle}{TO}
-\newcommand{\LH@toText}{Name Surname\\100 Street Avenue\\New York, NY 10001}
+\newcommand{\LH@toText}{}
 \newcommand{\LH@subjectTitle}{SUBJECT}
 \newcommand{\LH@subjectText}{}
 
@@ -211,9 +211,11 @@
   \savebox{\LH@tobox}{%
     \parbox[t]{\dimexpr\LH@toWidth-2\LH@cellPad\relax}{%
       \raggedright
-      {\bfseries\LH@labelsize \LH@toTitle}\par
-      \vspace{0.3em}
-      \LH@toText
+      \ifdefempty{\LH@toText}{}{%
+        {\bfseries\LH@labelsize \LH@toTitle}\par
+        \vspace{0.3em}
+        \LH@toText
+      }%
     }%
   }%
   \savebox{\LH@subjectbox}{%
@@ -227,7 +229,11 @@
   \setlength{\LH@contactY}{\dimexpr \LH@sidebarY + \ht\LH@deptbox + \dp\LH@deptbox\relax}%
   \setlength{\LH@subjectY}{\LH@contactY}%
   \setlength{\LH@bodyY}{\dimexpr \LH@contactY + \ht\LH@contactbox + \dp\LH@contactbox\relax}%
-  \setlength{\LH@toBottomY}{\dimexpr \LH@toY + \ht\LH@tobox + \dp\LH@tobox\relax}%
+  \ifdefempty{\LH@toText}{%
+    \setlength{\LH@toBottomY}{0pt}%
+  }{%
+    \setlength{\LH@toBottomY}{\dimexpr \LH@toY + \ht\LH@tobox + \dp\LH@tobox\relax}%
+  }%
   \ifdefempty{\LH@subjectText}{%
     \setlength{\LH@subjectBottomY}{0pt}%
   }{%
@@ -269,10 +275,12 @@
       };
 
       % --- TO block (fixed box, page 1 only)
-      \node[anchor=north west, inner sep=0pt]
-        at ([xshift=\dimexpr\LH@toX+\LH@cellPad\relax,yshift=-\LH@toY]current page.north west) {%
-          \usebox{\LH@tobox}%
-      };
+      \ifdefempty{\LH@toText}{}{%
+        \node[anchor=north west, inner sep=0pt]
+          at ([xshift=\dimexpr\LH@toX+\LH@cellPad\relax,yshift=-\LH@toY]current page.north west) {%
+            \usebox{\LH@tobox}%
+        };
+      }
       \ifdefempty{\LH@subjectText}{}{%
         \node[anchor=north west, inner sep=0pt]
           at ([xshift=\dimexpr\LH@toX+\LH@cellPad\relax,yshift=-\LH@subjectY]current page.north west) {%
@@ -346,8 +354,7 @@
 % --------------------------------------------------------------------------
 % Letter-class-like API
 % --------------------------------------------------------------------------
-\NewDocumentEnvironment{letter}{m}{%
-  \renewcommand{\LH@toText}{#1}%
+\NewDocumentEnvironment{letter}{}{%
   % Recompute TO(+SUBJECT) height for this letter's recipient/subject.
   \LH@measurefirstpageblocks
   % Body typography
