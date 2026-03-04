@@ -31,12 +31,16 @@
   \ClassError{RPIletterhead}{This class requires XeLaTeX or LuaLaTeX (fontspec is used)}{Compile with xelatex or lualatex.}
 \fi
 
-\IfFileExists{fonts/RPIGeist-Regular.otf}{%
-  \setmainfont{RPIGeist-Regular.otf}[
-    Path=fonts/,
-    BoldFont=RPIGeist-Bold.otf,
-    ItalicFont=RPIGeist-RegularItalic.otf,
-    BoldItalicFont=RPIGeist-BoldItalic.otf
+\edef\LHclassdir{\csname @currdir\endcsname}
+\edef\LHfontdir{\LHclassdir\detokenize{fonts/}}
+\edef\LHgeistregularfile{\LHfontdir\detokenize{RPIGeist-Regular.otf}}
+
+\IfFileExists{\LHgeistregularfile}{%
+  \setmainfont{RPIGeist-Regular}[
+    Path=\LHfontdir,
+    BoldFont=RPIGeist-Bold,
+    ItalicFont=RPIGeist-RegularItalic,
+    BoldItalicFont=RPIGeist-BoldItalic
   ]%
 }{%
   \IfFontExistsTF{RPI Geist}{%
